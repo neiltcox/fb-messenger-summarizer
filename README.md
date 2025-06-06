@@ -1,12 +1,13 @@
 # Facebook Messenger Summarizer
 
-A Chrome extension that uses ChatGPT to summarize your Facebook Messenger conversations.
+A Chrome extension that helps you summarize your Facebook Messenger conversations by copying them to your clipboard, ready to be pasted into any LLM of your choice.
 
 ## Features
 
-- Summarize any Messenger conversation with a single click
+- Works on messenger.com
+- Copies conversation text to your clipboard with a single click
 - Clean and minimal interface
-- Powered by ChatGPT for intelligent summarization
+- Use with any LLM of your choice (ChatGPT, Claude, etc.)
 
 ## Installation
 
@@ -17,9 +18,10 @@ A Chrome extension that uses ChatGPT to summarize your Facebook Messenger conver
 
 ## Usage
 
-1. Navigate to any Facebook Messenger conversation
+1. Navigate to any conversation on messenger.com
 2. Click the extension icon in your browser toolbar
-3. Click "Summarize" to generate a summary of the conversation
+3. Click "Copy" to copy the conversation to your clipboard
+4. Paste the conversation into your preferred LLM for summarization
 
 ## Development
 
