@@ -2,16 +2,16 @@
 function findSender(element) {
   let current = element;
   while (current && current !== document.body) {
-    // Look for h5.html-h5 within this ancestor
-    const h5 = current.querySelector && current.querySelector('h5.html-h5');
-    if (h5) {
-      const span = h5.querySelector('span');
-      if (span) {
-        if (span.textContent.trim().toLowerCase().includes('you sent')) {
+    // Look for the lowest common ancestor of the sender and the content within `current`
+    const msgDiv = current.querySelector?.('div.x78zum5.xdt5ytf.x1n2onr6[role="gridcell"]');
+    if (msgDiv) {
+      const senderSpan = msgDiv.querySelector('span');
+      if (senderSpan) {
+        const sender = senderSpan.textContent.trim();
+        if (sender.toLowerCase().includes('you sent')) {
           return 'You';
-        } else {
-          return span.textContent.trim();
         }
+        return sender;
       }
     }
     current = current.parentElement;
