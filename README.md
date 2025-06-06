@@ -1,33 +1,36 @@
 # Facebook Messenger Summarizer
 
-A Chrome extension that summarizes Facebook Messenger conversations using ChatGPT.
+A Chrome extension that uses ChatGPT to summarize your Facebook Messenger conversations.
 
 ## Features
 
-- Summarize conversations from your last message
-- Custom date range selection
-- Automatic ChatGPT integration
-- Clean and modern UI
+- Summarize any Messenger conversation with a single click
+- Clean and minimal interface
+- Powered by ChatGPT for intelligent summarization
 
 ## Installation
 
-1. Clone this repository or download the files
-2. Open Chrome and go to `chrome://extensions/`
+1. Clone this repository
+2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable "Developer mode" in the top right
-4. Click "Load unpacked" and select the directory containing the extension files
+4. Click "Load unpacked" and select the project directory
 
 ## Usage
 
-1. Go to [Messenger.com](https://www.messenger.com) and open a conversation
-2. Click the extension icon in your Chrome toolbar
-3. Choose between summarizing from your last message or selecting a custom date range
-4. Click "Summarize Conversation"
-5. A new tab will open with ChatGPT, containing your conversation and a prompt for summarization
+1. Navigate to any Facebook Messenger conversation
+2. Click the extension icon in your browser toolbar
+3. Click "Summarize" to generate a summary of the conversation
 
-## Note
+## Development
 
-This extension requires you to be logged into ChatGPT in your browser. The extension will open ChatGPT in a new tab with the conversation content and a prompt for summarization.
+```bash
+# Install dependencies
+npm install
 
-## Privacy
+# Generate icons
+node generate_icons.js
+```
 
-This extension only processes messages from the currently open conversation and does not store any data. All processing is done locally in your browser.
+## License
+
+MIT 
