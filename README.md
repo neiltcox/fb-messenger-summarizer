@@ -4,10 +4,8 @@ A Chrome extension that helps you summarize your Facebook Messenger conversation
 
 ## Features
 
-- Works on messenger.com
-- Copies conversation text to your clipboard with a single click
-- Clean and minimal interface
-- Use with any LLM of your choice (ChatGPT, Claude, etc.)
+- Works on https://messenger.com
+- Copies prompt + conversation text to your clipboard with a single click
 
 ## Installation
 
@@ -18,21 +16,8 @@ A Chrome extension that helps you summarize your Facebook Messenger conversation
 
 ## Usage
 
-1. Navigate to any conversation on messenger.com
+1. Navigate to any conversation on https://messenger.com
 2. Click the extension icon in your browser toolbar
-3. Click "Copy" to copy the conversation to your clipboard
+3. Scroll up in the conversation from where you want the summary to start
+3. The prompt + conversation will be automatically added to your clipboard
 4. Paste the conversation into your preferred LLM for summarization
-
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Generate icons
-node generate_icons.js
-```
-
-## License
-
-MIT 
