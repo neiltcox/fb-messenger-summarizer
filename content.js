@@ -1,21 +1,56 @@
 // Function to get the sender for a message element
 function findSender(element) {
-  let current = element;
-  while (current && current !== document.body) {
-    // Look for h5.html-h5 within this ancestor
-    const h5 = current.querySelector && current.querySelector('h5.html-h5');
-    if (h5) {
-      const span = h5.querySelector('span');
-      if (span) {
-        if (span.textContent.trim().toLowerCase().includes('you sent')) {
-          return 'You';
-        } else {
-          return span.textContent.trim();
-        }
-      }
-    }
-    current = current.parentElement;
+  // Find the closest message container
+  const messageContainer = element.closest('div[role="row"]');
+  if (!messageContainer) {
+    console.log('No message container found for element:', element);
+    return 'Unknown';
   }
+
+  // 0. Check for reply context in h5 or span
+  const replyHeader = messageContainer.querySelector('h5, span');
+  if (replyHeader) {
+    const replyText = replyHeader.textContent.trim();
+    // Match patterns like 'You replied to X' or 'X replied to Y'
+    const match = replyText.match(/^(.*?) replied to (.*)$/);
+    if (match) {
+      const sender = match[1].trim();
+      const repliedTo = match[2].trim();
+      // Normalize 'You' for your own replies
+      const senderLabel = sender === 'You' ? 'You' : sender;
+      return `${senderLabel} (replied to ${repliedTo})`;
+    }
+  }
+
+  // 1. Look for a span with 'You sent' (your own message)
+  const youSentSpan = Array.from(messageContainer.querySelectorAll('span.x1lziwak.xexx8yu'))
+    .find(span => span.textContent.trim() === 'You sent');
+  if (youSentSpan) {
+    return 'You';
+  }
+
+  // 2. Look for a sender name (not message text)
+  // We'll skip spans that are deeply nested (likely message text) or empty
+  const allSpans = messageContainer.querySelectorAll('span.x1lziwak.xexx8yu');
+  for (const span of allSpans) {
+    const text = span.textContent.trim();
+    if (!text || text === 'You sent') continue;
+    // Heuristic: skip if this span contains a div or is deeply nested (likely message text)
+    if (span.querySelector('div')) continue;
+    // Skip if text looks like a timestamp or metadata
+    if (text.includes('·') || text.includes('at') || text.match(/^\d+:\d+/) || text.match(/^[A-Za-z]+, \d+$/)) continue;
+    // If it passes all checks, it's likely the sender name
+    return text;
+  }
+
+  // 3. Fallback: If this is an outgoing message (your message), set sender to 'You'
+  const outgoing = messageContainer.textContent.includes('You sent');
+  if (outgoing) {
+    return 'You';
+  }
+
+  // 4. If still not found, return 'Unknown'
+  console.log('Could not find sender in message container:', messageContainer);
   return 'Unknown';
 }
 
@@ -25,12 +60,19 @@ function getMessages() {
   // Select all message bubbles by class pattern (Messenger uses obfuscated class names, but 'xexx8yu' seems stable)
   const messageElements = document.querySelectorAll('div.xexx8yu[dir="auto"]');
 
-  // console.log('Found message elements:', messageElements.length);
+  console.log('Found message elements:', messageElements.length);
 
   for (const element of messageElements) {
-    const messageText = element.textContent;
+    // Get the actual message text, excluding any reply headers
+    const messageText = element.textContent.trim();
     if (messageText && messageText.trim().length > 0) {
+      // Skip if this is just a reply header
+      if (messageText.match(/^.*? replied to .*?$/i)) {
+        continue;
+      }
+      
       const sender = findSender(element);
+      console.log('Message:', messageText.trim(), 'Sender:', sender);
       messages.push({
         sender,
         text: messageText.trim(),
@@ -39,7 +81,7 @@ function getMessages() {
     }
   }
 
-  // console.log('Total messages collected:', messages.length);
+  console.log('Total messages collected:', messages.length);
   return messages;
 }
 
@@ -84,9 +126,9 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Helper: get a unique key for a message (text + sender + index)
-function getMessageKey(msg, idx) {
-  return `${msg.sender}|||${msg.text}|||${idx}`;
+// Helper: get a unique key for a message (text + sender)
+function getMessageKey(msg) {
+  return `${msg.sender}|||${msg.text}`;
 }
 
 // Main auto-scroll and summarize function
@@ -109,12 +151,17 @@ async function autoScrollAndSummarize(sendResponse) {
   while (!atBottom && idleCount < maxIdle) {
     // Collect messages currently in DOM
     const messageElements = document.querySelectorAll('div.xexx8yu[dir="auto"]');
-    messageElements.forEach((element, idx) => {
+    messageElements.forEach((element) => {
       const messageText = element.textContent;
       if (messageText && messageText.trim().length > 0) {
         const sender = findSender(element);
-        const msg = { sender, text: messageText.trim(), time: null };
-        const key = getMessageKey(msg, idx);
+        const msg = { 
+          sender, 
+          text: messageText.trim(), 
+          time: null,
+          timestamp: Date.now() // Add timestamp for ordering
+        };
+        const key = getMessageKey(msg);
         if (!seenKeys.has(key)) {
           seenKeys.add(key);
           allMessages.push(msg);
@@ -140,6 +187,9 @@ async function autoScrollAndSummarize(sendResponse) {
     }
     lastScrollTop = chatContainer.scrollTop;
   }
+
+  // Sort messages by timestamp to maintain conversation order
+  allMessages.sort((a, b) => a.timestamp - b.timestamp);
 
   // Summarize all collected messages
   if (allMessages.length === 0) {
