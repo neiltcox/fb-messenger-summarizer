@@ -21,3 +21,19 @@ A Chrome extension that helps you summarize your Facebook Messenger conversation
 3. Scroll up in the conversation from where you want the summary to start
 3. The prompt + conversation will be automatically added to your clipboard
 4. Paste the conversation into your preferred LLM for summarization
+
+## Chrome Web Store Preparation
+
+### Creating Screenshots
+To create screenshots for the Chrome Web Store (1280x800 format):
+
+```bash
+magick "Screenshot.png" -resize 1280x800 -background white -gravity center -extent 1280x800 output.jpg
+```
+
+### Packaging Extension
+Run the packaging script to create a ZIP file ready for submission:
+
+```bash
+./package-extension.sh
+```
